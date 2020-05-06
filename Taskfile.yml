@@ -1,0 +1,8 @@
+version: '2'
+
+tasks:
+  dev:
+    sources:
+      - '*.go'
+    cmds:
+      - go build -o quark *.go
