@@ -44,13 +44,15 @@ func main() {
 	var position time.Duration
 	var length time.Duration
 
-	timeInfo := NewTimeInfo(position, length)
+	timeInfo, posLabel, lenLabel := NewTimeInfo(position, length)
 
 	go func() {
 		for {
 
 			position = ap.sampleRate.D(ap.streamer.Position()).Round(time.Second)
 			length = ap.sampleRate.D(ap.streamer.Len()).Round(time.Second)
+			posLabel.SetText(position.String())
+			lenLabel.SetText(length.String())
 			fmt.Printf("%v of %v", position, length)
 			fmt.Println()
 			timeInfo.Refresh()
