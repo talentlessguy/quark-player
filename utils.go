@@ -4,11 +4,14 @@ import (
 	"bufio"
 	"bytes"
 	"image"
+	"image/color"
 	"io/ioutil"
 	"log"
 	"os"
 
 	"fyne.io/fyne"
+	"fyne.io/fyne/canvas"
+	"fyne.io/fyne/theme"
 	"github.com/dhowden/tag"
 )
 
@@ -38,4 +41,15 @@ func GetImageFromMetadata(meta tag.Metadata) image.Image {
 	}
 
 	return img
+}
+
+// NewSpacer - create transparent rectangle
+func NewSpacer() *canvas.Rectangle {
+	bg := canvas.NewRectangle(color.Transparent)
+
+	bg.Resize(fyne.NewSize(300, theme.Padding()*2))
+
+	bg.SetMinSize(fyne.NewSize(300, theme.Padding()*2))
+
+	return bg
 }
