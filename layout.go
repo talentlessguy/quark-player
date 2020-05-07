@@ -33,11 +33,10 @@ func NewCoverImage(meta tag.Metadata) *canvas.Image {
 }
 
 // NewTimeInfo - layout with two labels representing track time info
-func NewTimeInfo(pos time.Duration, len time.Duration) *fyne.Container {
+func NewTimeInfo(pos time.Duration, len time.Duration) (*fyne.Container, *widget.Label, *widget.Label) {
 
 	posLabel := widget.NewLabel(pos.String())
-
 	lenLabel := widget.NewLabel(len.String())
 
-	return fyne.NewContainerWithLayout(layout.NewHBoxLayout(), posLabel, lenLabel)
+	return fyne.NewContainerWithLayout(layout.NewHBoxLayout(), posLabel, lenLabel), posLabel, lenLabel
 }
