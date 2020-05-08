@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/layout"
+	"fyne.io/fyne/theme"
 	"github.com/faiface/beep/speaker"
 )
 
@@ -15,8 +15,6 @@ func main() {
 	myApp := app.New()
 
 	path := GetAudioPath()
-
-	progress := NewAudioBar(10, 100)
 
 	audio := NewAudio(path)
 
@@ -44,18 +42,31 @@ func main() {
 	var position time.Duration
 	var length time.Duration
 
-	timeInfo, posLabel, lenLabel := NewTimeInfo(position, length)
+	posLabel := NewTimeInfo(position, length)
+
+	progress, currentBar, circle := NewAudioBar(int(position.Seconds()), int(length.Seconds()))
 
 	go func() {
 		for {
 
-			position = ap.sampleRate.D(ap.streamer.Position()).Round(time.Second)
-			length = ap.sampleRate.D(ap.streamer.Len()).Round(time.Second)
-			posLabel.SetText(position.String())
-			lenLabel.SetText(length.String())
-			fmt.Printf("%v of %v", position, length)
-			fmt.Println()
-			timeInfo.Refresh()
+			if !ap.ctrl.Paused {
+				position = ap.sampleRate.D(ap.streamer.Position()).Round(time.Second)
+				length = ap.sampleRate.D(ap.streamer.Len()).Round(time.Second)
+				posLabel.SetText(DurationToString(position) + " / " + DurationToString(length))
+
+				percentPos := int(position.Seconds() / length.Seconds() * 100)
+
+				barSize := fyne.NewSize(percentPos, theme.Padding()*2)
+
+				currentBar.Resize(barSize)
+
+				currentBar.SetMinSize(barSize)
+
+				circle.Move(fyne.NewPos(percentPos-5, -5))
+				posLabel.Refresh()
+				currentBar.Refresh()
+			}
+
 		}
 	}()
 
@@ -63,7 +74,7 @@ func main() {
 
 	controlsGrid := fyne.NewContainerWithLayout(layout.NewGridLayout(3), controls.prevTrackButton, controls.playButton, controls.nextTrackButton)
 
-	grid := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), layout.NewSpacer(), image, layout.NewSpacer(), progress, layout.NewSpacer(), timeInfo, label, NewSpacer(), controlsGrid)
+	grid := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), layout.NewSpacer(), image, layout.NewSpacer(), progress, layout.NewSpacer(), posLabel, label, NewSpacer(), controlsGrid)
 
 	appContainer := fyne.NewContainerWithLayout(layout.NewCenterLayout(), grid)
 

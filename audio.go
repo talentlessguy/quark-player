@@ -25,7 +25,9 @@ func (ap *AudioPanel) play() {
 
 	if ap.streamer.Position() == 0 {
 		speaker.Play(ap.volume)
+		ap.ctrl.Paused = false
 	} else {
+		ap.ctrl.Paused = false
 		speaker.Unlock()
 	}
 }
@@ -33,8 +35,11 @@ func (ap *AudioPanel) play() {
 func (ap *AudioPanel) pause() {
 	if ap.streamer.Position() == ap.streamer.Len() {
 		speaker.Close()
+
+		ap.ctrl.Paused = true
 	} else {
 		speaker.Lock()
+		ap.ctrl.Paused = true
 	}
 }
 

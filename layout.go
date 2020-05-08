@@ -5,7 +5,6 @@ import (
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
-	"fyne.io/fyne/layout"
 	"fyne.io/fyne/widget"
 	"github.com/dhowden/tag"
 )
@@ -33,10 +32,13 @@ func NewCoverImage(meta tag.Metadata) *canvas.Image {
 }
 
 // NewTimeInfo - layout with two labels representing track time info
-func NewTimeInfo(pos time.Duration, len time.Duration) (*fyne.Container, *widget.Label, *widget.Label) {
+func NewTimeInfo(pos time.Duration, len time.Duration) *widget.Label {
 
-	posLabel := widget.NewLabel(pos.String())
-	lenLabel := widget.NewLabel(len.String())
+	str := pos.String() + " / " + len.String()
 
-	return fyne.NewContainerWithLayout(layout.NewHBoxLayout(), posLabel, lenLabel), posLabel, lenLabel
+	posLabel := widget.NewLabel(str)
+
+	posLabel.Alignment = fyne.TextAlignCenter
+
+	return posLabel
 }

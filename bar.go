@@ -9,13 +9,25 @@ import (
 	"fyne.io/fyne/theme"
 )
 
+func dragCircle(pos int) *canvas.Circle {
+	circle := canvas.NewCircle(theme.PrimaryColor())
+
+	circle.Resize(fyne.NewSize(20, 20))
+
+	circle.MinSize().Add(fyne.NewSize(20, 20))
+
+	circle.Move(fyne.NewPos(pos-5, -5))
+
+	return circle
+}
+
 // NewAudioBar - track bar
-func NewAudioBar(currentTime int, timeLeft int) *fyne.Container {
+func NewAudioBar(currentTime int, totalTime int) (*fyne.Container, *canvas.Rectangle, *canvas.Circle) {
 	currentBar := canvas.NewRectangle(theme.PrimaryColor())
 
-	currentBar.Resize(fyne.NewSize(100, theme.Padding()*2))
+	currentBar.Resize(fyne.NewSize(currentTime, theme.Padding()*2))
 
-	currentBar.SetMinSize(fyne.NewSize(100, theme.Padding()*2))
+	currentBar.SetMinSize(fyne.NewSize(currentTime, theme.Padding()*2))
 
 	totalBar := canvas.NewRectangle(color.Black)
 
@@ -23,11 +35,13 @@ func NewAudioBar(currentTime int, timeLeft int) *fyne.Container {
 
 	totalBar.SetMinSize(fyne.NewSize(300, theme.Padding()*2))
 
-	c := fyne.NewContainer(totalBar, currentBar)
+	rngBtn := dragCircle(currentTime)
+
+	c := fyne.NewContainer(totalBar, currentBar, rngBtn)
 
 	cWithBg := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), NewSpacer(), c, NewSpacer())
 
 	layout := fyne.NewContainerWithLayout(layout.NewCenterLayout(), cWithBg)
 
-	return layout
+	return layout, currentBar, rngBtn
 }

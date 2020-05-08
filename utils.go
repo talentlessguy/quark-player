@@ -8,6 +8,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strconv"
+	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/canvas"
@@ -52,4 +54,12 @@ func NewSpacer() *canvas.Rectangle {
 	bg.SetMinSize(fyne.NewSize(300, theme.Padding()*2))
 
 	return bg
+}
+
+// DurationToString - convert duration to MM:SS format
+func DurationToString(time time.Duration) string {
+	mins := time.Minutes()
+	secs := time.Seconds()
+
+	return strconv.Itoa(int(mins)) + ":" + strconv.Itoa(int(secs)-int(mins)*60)
 }

@@ -28,11 +28,12 @@ func NewPlayButton(ap *AudioPanel) *widget.Button {
 	btn.OnTapped = func() {
 
 		if btn.Icon.Name() == "play" {
+			btn.SetIcon(getIcons("pause"))
 			ap.play()
-			btn.Icon = getIcons("pause")
+
 		} else {
 			ap.pause()
-			btn.Icon = getIcons("play")
+			btn.SetIcon(getIcons("play"))
 		}
 	}
 

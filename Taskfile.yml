@@ -6,3 +6,7 @@ tasks:
       - '*.go'
     cmds:
       - go build -o quark *.go
+  build:
+    cmds:
+      - go build -o quark *.go
+      - upx quark
