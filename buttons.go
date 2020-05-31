@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/widget"
@@ -41,9 +42,11 @@ func NewPlayButton(ap *AudioPanel) *widget.Button {
 }
 
 // NewPrevTrackButton - run previous track
-func NewPrevTrackButton() *widget.Button {
+func NewPrevTrackButton(ap *AudioPanel) *widget.Button {
 	btn := widget.NewButtonWithIcon("", getIcons("prev"), func() {
-		fmt.Println("Prev Track")
+		pos := ap.streamer.Position()
+
+		pos -= ap.sampleRate.N(time.Second)
 	})
 
 	return btn

@@ -14,7 +14,7 @@ func NewControls(ap *AudioPanel) Controls {
 
 	return Controls{
 		playButton:      NewPlayButton(ap),
-		prevTrackButton: NewPrevTrackButton(),
+		prevTrackButton: NewPrevTrackButton(ap),
 		nextTrackButton: NewNextTrackButton(),
 	}
 }

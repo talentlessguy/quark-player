@@ -1,13 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"time"
 
 	"fyne.io/fyne"
 	"fyne.io/fyne/app"
 	"fyne.io/fyne/layout"
-	"fyne.io/fyne/theme"
 	"github.com/faiface/beep/speaker"
 )
 
@@ -44,27 +44,44 @@ func main() {
 
 	posLabel := NewTimeInfo(position, length)
 
-	progress, currentBar, circle := NewAudioBar(int(position.Seconds()), int(length.Seconds()))
+	slider := NewAudioBar(length.Seconds())
 
 	go func() {
 		for {
+
+			slider.OnChanged = func(pos float64) {
+
+				sliderPosToSeconds := int(pos / 100 * float64(length.Seconds()))
+
+				fmt.Printf("Slider position in seconds %v\n", sliderPosToSeconds)
+				fmt.Printf("Audio length in seconds %v\n", length.Seconds())
+				fmt.Printf("Audio length in ms %v\n", length.Milliseconds())
+				fmt.Printf("Streamer Length %v\n", ap.streamer.Len())
+
+				audioPos := ap.streamer.Position()
+
+				diff := sliderPosToSeconds - audioPos
+
+				if diff > 0 {
+					audioPos += diff
+				} else {
+					audioPos -= diff
+				}
+
+			}
 
 			if !ap.ctrl.Paused {
 				position = ap.sampleRate.D(ap.streamer.Position()).Round(time.Second)
 				length = ap.sampleRate.D(ap.streamer.Len()).Round(time.Second)
 				posLabel.SetText(DurationToString(position) + " / " + DurationToString(length))
 
-				percentPos := int(position.Seconds() / length.Seconds() * 100)
+				percentPos := (position.Seconds() / length.Seconds() * 100)
 
-				barSize := fyne.NewSize(percentPos, theme.Padding()*2)
+				slider.Value = percentPos
 
-				currentBar.Resize(barSize)
+				slider.Refresh()
 
-				currentBar.SetMinSize(barSize)
-
-				circle.Move(fyne.NewPos(percentPos-5, -5))
 				posLabel.Refresh()
-				currentBar.Refresh()
 			}
 
 		}
@@ -74,7 +91,9 @@ func main() {
 
 	controlsGrid := fyne.NewContainerWithLayout(layout.NewGridLayout(3), controls.prevTrackButton, controls.playButton, controls.nextTrackButton)
 
-	grid := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), layout.NewSpacer(), image, layout.NewSpacer(), progress, layout.NewSpacer(), posLabel, label, NewSpacer(), controlsGrid)
+	sliderLayout := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), slider)
+
+	grid := fyne.NewContainerWithLayout(layout.NewVBoxLayout(), layout.NewSpacer(), image, layout.NewSpacer(), sliderLayout, layout.NewSpacer(), posLabel, label, NewSpacer(), controlsGrid)
 
 	appContainer := fyne.NewContainerWithLayout(layout.NewCenterLayout(), grid)
 
